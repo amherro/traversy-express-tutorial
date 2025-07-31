@@ -1,0 +1,16 @@
+{
+  "name": "express-tutorial",
+  "version": "1.0.0",
+  "description": "Devcamper backend api",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "NODE_ENV=production node server",
+    "dev": "node --watch-path=./ --env-file=./config/config.env server.js"
+  },
+  "author": "Adam",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
