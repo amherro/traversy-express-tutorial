@@ -1,10 +1,33 @@
-const errorHandler = (err, req, res, next) => {
-  // Log to console for developer
-  console.log(err.stack.red);
+import ErrorResponse from '../utils/errorResponse.js';
 
+const errorHandler = (err, req, res, next) => {
+  let error = { ...err };
+
+  error.message = err.message;
+
+  // Log to console for developer
+  console.log(err);
+
+  //   Mongoose bad ObjectId
+  if (err.name === 'CastError') {
+    const message = `Bootcamp not found with ID of ${err.value}`;
+    error = new ErrorResponse(message, 404);
+  }
+
+  //   Mongoose duplicate key
+  if (err.code === 11000) {
+    const message = 'Duplicate field value entered';
+    error = new ErrorResponse(message, 400);
+  }
+
+  //   Mongoose validation error
+  if (err.name === 'ValidatorError') {
+    const message = Object.values(err.errors).map((value) => value.message);
+    error = new ErrorResponse(message, 400);
+  }
   res
-    .status(err.statusCode || 500)
-    .json({ success: false, error: err.message || 'Server Error' });
+    .status(error.statusCode || 500)
+    .json({ success: false, error: error.message || 'Server Error' });
 };
 
 export default errorHandler;
