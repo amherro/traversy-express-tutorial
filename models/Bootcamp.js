@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import slugify from 'slugify';
 
+import geocoder from '../utils/geocoder.js';
+
 const BootcampSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -101,7 +103,28 @@ const BootcampSchema = new mongoose.Schema({
 
 // Create bootcamp slug from the name
 BootcampSchema.pre('save', function (next) {
-  console.log('Slugify ran...', this.name);
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// Geocode and create location field
+BootcampSchema.pre('save', async function (next) {
+  const location = await geocoder.geocode(this.address);
+  this.location = {
+    type: 'Point',
+    // Have to put longitude first b/c that's how Mapquest does it
+    coordinates: [location[0].longitude, location[0].latitude],
+    formattedAddress: location[0].formattedAddress,
+    street: location[0].streetName,
+    city: location[0].city,
+    state: location[0].stateCode,
+    zipcode: location[0].zipcode,
+    country: location[0].countryCode,
+  };
+
+  // Do NOT save address in DB
+  this.address = undefined;
+
   next();
 });
 
