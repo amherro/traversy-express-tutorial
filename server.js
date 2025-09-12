@@ -17,6 +17,9 @@ const app = express();
 // Body Parser
 app.use(express.json());
 
+// Query Parser
+app.set('query parser', 'extended');
+
 // Dev logging middleware
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));

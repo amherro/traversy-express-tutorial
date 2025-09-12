@@ -122,7 +122,7 @@ BootcampSchema.pre('save', async function (next) {
     country: location[0].countryCode,
   };
 
-  // Do NOT save address in DB
+  // Do NOT save address in DB - we already are getting the formatted address in the location field...this removes that field from the JSON
   this.address = undefined;
 
   next();
